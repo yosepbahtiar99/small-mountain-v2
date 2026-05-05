@@ -87,7 +87,7 @@ export default function GameManager() {
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="bg-white/5 p-6 rounded-2xl border border-white/5 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-stone-50/50 p-10 rounded-[2.5rem] border border-stone-200 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm text-slate-400">Game Title</label>
@@ -154,7 +154,7 @@ export default function GameManager() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {games.map((game) => (
-            <div key={game.id} className="bg-white/5 p-4 rounded-xl border border-white/5 flex justify-between items-center">
+            <div key={game.id} className="bg-white/50 p-6 rounded-[2rem] border border-stone-200 flex justify-between items-center shadow-sm">
               <div className="flex items-center gap-4">
                 {game.thumbnail && (
                   <img src={`http://localhost:5000/${game.thumbnail}`} className="w-12 h-12 object-cover rounded-lg" />

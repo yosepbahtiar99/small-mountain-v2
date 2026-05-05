@@ -70,7 +70,7 @@ export default function BlogManager() {
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="bg-white/5 p-6 rounded-2xl border border-white/5 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-stone-50/50 p-10 rounded-[2.5rem] border border-stone-200 space-y-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold">{formData.id ? 'Edit' : 'New'} Devlog</h3>
             <button 
