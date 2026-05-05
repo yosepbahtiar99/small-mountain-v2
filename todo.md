@@ -1,10 +1,10 @@
 # 🗺️ Implementation Plan: Small Mountain Studio
 
 ## 🛠️ Phase 1: Foundation & Backend Core
-- [ ] Refactoring base folders (sudah ada pondasi awal).
-- [ ] Backend: Setup Database Connection (Sequelize) dengan `sync({ force: true })`.
-- [ ] Backend: Setup Multer untuk `/uploads` lokal.
-- [ ] Backend: Base API Response handler & Error middleware.
+- [x] Refactoring base folders (sudah ada pondasi awal).
+- [x] Backend: Setup Database Connection (Sequelize) dengan `sync({ force: true })`.
+- [x] Backend: Setup Multer untuk `/uploads` lokal.
+- [x] Backend: Base API Response handler & Error middleware.
 
 ## 🔐 Phase 2: Auth & Admin System
 - [ ] Backend: Auth API (Login, Refresh Token via HttpOnly Cookie).
