@@ -24,6 +24,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/games', require('./routes/gameRoutes'));
+app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/feedback', require('./routes/feedbackRoutes'));
+app.use('/api/merch', require('./routes/merchRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ message: "Small Mountain API is running 🚀" });

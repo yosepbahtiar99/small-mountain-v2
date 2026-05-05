@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import App from '../../App';
 import LoginPage from '../../features/auth/pages/LoginPage';
+import DashboardPage from '../../features/admin/pages/DashboardPage';
 import { useAuthStore } from '../store/useAuthStore';
 import { useEffect } from 'react';
 
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
     path: '/admin',
     element: (
       <ProtectedRoute>
-        <div className="p-8"><h1>Admin Dashboard (Coming Soon)</h1></div>
+        <DashboardPage />
       </ProtectedRoute>
     ),
   }
