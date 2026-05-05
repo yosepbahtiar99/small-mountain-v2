@@ -19,12 +19,12 @@
 - [x] **Merch Module**: Simple info manager (Link Shopee).
 
 ## 🎨 Phase 4: Frontend Landing & UI
-- [ ] Home Page: Bento Grid layout, Hero section.
-- [ ] Home Page: Integrating Game Showcase & Devlog list.
-- [ ] Home Page: Integrating Merch & Feedback form.
-- [ ] **Bilingual UI**: Setup i18n logic (EN/ID toggle).
+- [x] Home Page: Bento Grid layout, Hero section.
+- [x] Home Page: Integrating Game Showcase & Devlog list.
+- [x] Home Page: Integrating Merch & Feedback form.
+- [x] **Bilingual UI**: Setup i18n logic (EN/ID toggle).
 
 ## ✨ Phase 5: Polish & Visual Excellence
-- [ ] Adding Framer Motion animations (Smooth transitions).
-- [ ] Adding OG Tags logic for better social sharing.
-- [ ] Final UI Review (Glassmorphism & Bento consistency).
+- [x] Adding Framer Motion animations (Smooth transitions).
+- [x] Adding OG Tags logic for better social sharing.
+- [x] Final UI Review (Glassmorphism & Bento consistency).
