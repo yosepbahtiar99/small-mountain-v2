@@ -14,9 +14,9 @@
 
 ## 📝 Phase 3: Content Modules (The "Meat")
 - [x] **Game Module**: API & Form Admin (Title, Desc, Progress Bars, Image).
-- [ ] **Blog Module**: API & Form Admin (Title, Content Markdown, Thumbnail) - *Backend Done*.
-- [ ] **Feedback Module**: Public Form & Admin View list - *Backend Done*.
-- [ ] **Merch Module**: Simple info manager (Link Shopee) - *Backend Done*.
+- [x] **Blog Module**: API & Form Admin (Title, Content Markdown, Thumbnail).
+- [x] **Feedback Module**: Public Form & Admin View list.
+- [x] **Merch Module**: Simple info manager (Link Shopee).
 
 ## 🎨 Phase 4: Frontend Landing & UI
 - [ ] Home Page: Bento Grid layout, Hero section.

@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { Gamepad2, FileText, MessageSquare, ShoppingBag, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuthStore } from '../../../shared/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import GameManager from '../components/GameManager';
+import BlogManager from '../components/BlogManager';
+import FeedbackManager from '../components/FeedbackManager';
+import MerchManager from '../components/MerchManager';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -79,12 +83,9 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'games' && <GameManager />}
-          
-          {['blogs', 'feedback', 'merch'].includes(activeTab) && (
-            <div className="text-center py-20 text-slate-500">
-              <p>Module for {activeTab} is being integrated...</p>
-            </div>
-          )}
+          {activeTab === 'blogs' && <BlogManager />}
+          {activeTab === 'feedback' && <FeedbackManager />}
+          {activeTab === 'merch' && <MerchManager />}
         </div>
       </main>
     </div>
