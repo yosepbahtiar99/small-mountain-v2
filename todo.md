@@ -7,10 +7,10 @@
 - [x] Backend: Base API Response handler & Error middleware.
 
 ## 🔐 Phase 2: Auth & Admin System
-- [ ] Backend: Auth API (Login, Refresh Token via HttpOnly Cookie).
-- [ ] Frontend: Setup Auth Store (Zustand) & Axios Interceptor.
-- [ ] Frontend: Login Page (Premium aesthetic).
-- [ ] Frontend: Protected Route logic.
+- [x] Backend: Auth API (Login, Refresh Token via HttpOnly Cookie).
+- [x] Frontend: Setup Auth Store (Zustand) & Axios Interceptor.
+- [x] Frontend: Login Page (Premium aesthetic).
+- [x] Frontend: Protected Route logic.
 
 ## 📝 Phase 3: Content Modules (The "Meat")
 - [ ] **Game Module**: API & Form Admin (Title, Desc, Progress Bars, Image).

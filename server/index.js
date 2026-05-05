@@ -23,19 +23,32 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+
 app.get('/', (req, res) => {
     res.json({ message: "Small Mountain API is running 🚀" });
 });
-
-// app.use('/api/auth', require('./routes/authRoutes'));
 
 // Error Handler
 app.use(errorHandler);
 
 // Database Sync & Server Start
-sequelize.sync({ force: true }) // WARNING: force: true will drop tables!
-  .then(() => {
+const User = require('./models/User');
+
+sequelize.sync({ force: false }) // Changed to false to preserve data after first run
+  .then(async () => {
     console.log('Database synced successfully');
+    
+    // Simple Seeder for Admin (Change this in production!)
+    const adminCount = await User.count();
+    if (adminCount === 0) {
+      await User.create({
+        username: 'admin',
+        password: 'password123' // This will be hashed by the model hook
+      });
+      console.log('Default admin created: admin / password123');
+    }
+
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
