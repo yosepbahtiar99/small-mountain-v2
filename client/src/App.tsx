@@ -33,7 +33,9 @@ function App() {
   }, []);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'id' : 'en');
+    const newLng = i18n.language === 'en' ? 'id' : 'en';
+    i18n.changeLanguage(newLng);
+    localStorage.setItem('lng', newLng);
   };
 
   const handleFeedback = async (e: React.FormEvent) => {

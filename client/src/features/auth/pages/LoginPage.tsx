@@ -21,7 +21,7 @@ export default function LoginPage() {
     try {
       const response = await api.post('/api/auth/login', { username, password });
       login(response.data.data);
-      navigate('/');
+      navigate('/admin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

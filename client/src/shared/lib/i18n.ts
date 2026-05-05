@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      "studio_name": "Dika Studio",
+      "studio_name": "Small Mountain",
       "studio_tagline": "Creating immersive visual stories and simple interactive experiences.",
       "featured_game": "Featured Game",
       "released_games": "Released Games",
@@ -22,7 +22,7 @@ const resources = {
   },
   id: {
     translation: {
-      "studio_name": "Dika Studio",
+      "studio_name": "Small Mountain",
       "studio_tagline": "Menciptakan cerita visual yang imersif dan pengalaman interaktif sederhana.",
       "featured_game": "Game Unggulan",
       "released_games": "Game Rilis",
@@ -44,7 +44,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "en", 
+    lng: localStorage.getItem('lng') || "en", 
     interpolation: {
       escapeValue: false
     }
