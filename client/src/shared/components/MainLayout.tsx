@@ -38,7 +38,7 @@ export default function MainLayout() {
           animate={{ y: 0, opacity: 1 }}
           className="glass-warm px-2 py-2 rounded-full border border-stone-200/50 flex items-center gap-1 md:gap-4 shadow-xl backdrop-blur-xl"
         >
-          <Link to="/" className="text-primary font-black text-xl tracking-tighter ml-4 mr-2 hidden md:block">SM</Link>
+          <Link to="/" className="text-primary font-black text-xl tracking-tighter ml-4 mr-2 hidden md:block"><Mountain size={16} /></Link>
           
           <div className="flex items-center gap-1 md:gap-2">
             {navLinks.map((link) => (
