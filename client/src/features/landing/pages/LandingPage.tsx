@@ -46,13 +46,13 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-10"
+            className="space-y-10 z-50"
           >
             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
               <Mountain size={14} />
               Mountain Storytelling
             </div>
-            <h1 className="text-7xl md:text-9xl font-black tracking-tight leading-[0.85] text-warm-text">
+            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tight leading-[0.85] text-warm-text">
               SMALL <br />
               <span className="text-primary">Mountain.</span> <br />
             </h1>
@@ -120,14 +120,14 @@ export default function LandingPage() {
                 )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-warm-bg via-warm-bg/40 to-transparent" />
-              <div className="relative p-16 h-full flex flex-col justify-end space-y-8">
+              <div className="relative p-8 md:p-16 h-full flex flex-col justify-end space-y-8">
                 <div className="flex items-center gap-3">
                   <div className="h-px w-10 bg-primary" />
                   <span className="text-primary text-[10px] font-black uppercase tracking-widest">
                     {featuredGame.status}
                   </span>
                 </div>
-                <h3 className="text-6xl font-black text-warm-text leading-none tracking-tighter">{featuredGame.title}</h3>
+                <h3 className="text-4xl md:text-6xl font-black text-warm-text leading-none tracking-tighter">{featuredGame.title}</h3>
                 <p className="text-stone-600 max-w-lg text-lg font-medium leading-relaxed">{featuredGame.description}</p>
                 <div className="flex gap-12 pt-4">
                   {Object.entries(featuredGame.progress || {}).map(([key, val]: [string, any]) => (
@@ -158,11 +158,11 @@ export default function LandingPage() {
       {/* Feedback Section */}
       <section className="max-w-4xl mx-auto px-8 text-center space-y-16 pb-40">
         <div className="space-y-4">
-          <h2 className="text-6xl font-black text-warm-text">{t('feedback')}</h2>
+          <h2 className="text-4xl md:text-6xl font-black text-warm-text">{t('feedback')}</h2>
           <p className="text-stone-500 text-xl font-medium">Have something to say? We're listening.</p>
         </div>
 
-        <form onSubmit={handleFeedback} className="glass-warm p-16 rounded-[4rem] border border-stone-200/50 space-y-8 text-left shadow-lg">
+        <form onSubmit={handleFeedback} className="glass-warm p-8 md:p-16 rounded-[2.5rem] md:rounded-[4rem] border border-stone-200/50 space-y-8 text-left shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-2">Name</label>

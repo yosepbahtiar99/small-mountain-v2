@@ -36,7 +36,7 @@ export default function GamesPage() {
            <div className="h-px w-12 bg-primary/30" />
            The Collection
         </div>
-        <h1 className="text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">Library</h1>
+        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">Library</h1>
         <p className="text-stone-500 max-w-lg text-xl font-medium leading-relaxed">Every world we've built, every story we've told. All in one quiet place.</p>
       </header>
 
@@ -48,7 +48,7 @@ export default function GamesPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group glass-warm rounded-[3.5rem] border border-stone-200/50 overflow-hidden flex flex-col hover:shadow-2xl transition-all duration-500"
+              className="group glass-warm rounded-[2.5rem] md:rounded-[3.5rem] border border-stone-200/50 overflow-hidden flex flex-col hover:shadow-2xl transition-all duration-500"
             >
               <div className="aspect-[16/11] bg-stone-100 relative overflow-hidden">
                  {game.thumbnail && (
@@ -65,9 +65,9 @@ export default function GamesPage() {
                  </div>
               </div>
               
-              <div className="p-10 flex-1 flex flex-col justify-between space-y-8">
+              <div className="p-6 md:p-10 flex-1 flex flex-col justify-between space-y-8">
                  <div className="space-y-4">
-                    <h3 className="text-3xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight line-clamp-2">{game.title}</h3>
+                    <h3 className="text-2xl md:text-3xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight line-clamp-2">{game.title}</h3>
                     <p className="text-stone-500 text-base font-medium line-clamp-3 leading-relaxed">{game.description}</p>
                  </div>
                  

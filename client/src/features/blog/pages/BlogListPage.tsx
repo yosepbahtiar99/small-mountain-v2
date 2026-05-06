@@ -36,7 +36,7 @@ export default function BlogListPage() {
            <div className="h-px w-12 bg-primary/30" />
            The Journal
         </div>
-        <h1 className="text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">Devlogs</h1>
+        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">Devlogs</h1>
         <p className="text-stone-500 max-w-lg text-xl font-medium leading-relaxed">Scribbles and thoughts from the mountain trail. Our journey, unedited.</p>
       </header>
 
@@ -49,9 +49,9 @@ export default function BlogListPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
               onClick={() => navigate(`/devlogs/${blog.slug}`)}
-              className="group relative flex flex-col md:flex-row gap-12 items-start cursor-pointer"
+              className="group relative flex flex-col md:flex-row gap-6 md:gap-12 items-start cursor-pointer"
             >
-              <div className="w-full md:w-80 aspect-[4/3] rounded-[3rem] bg-stone-100 overflow-hidden flex-shrink-0 border border-stone-200/50 shadow-sm group-hover:shadow-xl transition-all duration-700">
+              <div className="w-full md:w-80 aspect-[4/3] rounded-[2rem] md:rounded-[3rem] bg-stone-100 overflow-hidden flex-shrink-0 border border-stone-200/50 shadow-sm group-hover:shadow-xl transition-all duration-700">
                  {blog.thumbnail ? (
                    <img src={`${BASE_URL}/${blog.thumbnail}`} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 grayscale-[30%] group-hover:grayscale-0" />
                  ) : (
@@ -71,7 +71,7 @@ export default function BlogListPage() {
                           {new Date(blog.createdAt).toLocaleDateString()}
                        </div>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight tracking-tight">{blog.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight tracking-tight">{blog.title}</h2>
                     <p className="text-stone-500 font-medium text-lg leading-relaxed line-clamp-3">{blog.content.substring(0, 200)}...</p>
                  </div>
                  

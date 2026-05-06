@@ -36,7 +36,7 @@ export default function MerchPage() {
            <div className="h-px w-12 bg-primary/30" />
            The Shop
         </div>
-        <h1 className="text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">{t('merch_store')}</h1>
+        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-warm-text leading-none tracking-tighter">{t('merch_store')}</h1>
         <p className="text-stone-500 max-w-lg text-xl font-medium leading-relaxed">Little pieces of our mountain for your home. Crafted with love and coffee.</p>
       </header>
 
@@ -48,9 +48,9 @@ export default function MerchPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05 }}
-              className="group glass-warm p-8 rounded-[4rem] border border-stone-200/50 flex flex-col hover:shadow-2xl transition-all duration-500"
+              className="group glass-warm p-6 md:p-8 rounded-[2.5rem] md:rounded-[4rem] border border-stone-200/50 flex flex-col hover:shadow-2xl transition-all duration-500"
             >
-              <div className="aspect-square bg-stone-100 rounded-[2.5rem] overflow-hidden mb-8 relative">
+              <div className="aspect-square bg-stone-100 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden mb-8 relative">
                  {item.thumbnail ? (
                    <img src={`${BASE_URL}/${item.thumbnail}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 grayscale-[10%] group-hover:grayscale-0" />
                  ) : (
