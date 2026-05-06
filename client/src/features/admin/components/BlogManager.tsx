@@ -1,23 +1,35 @@
 import { useState, useEffect } from 'react';
 import api from '../../../shared/lib/axios';
-import { Plus, Pencil, Trash2, Save, X, Eye, Upload, HelpCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, Eye, Upload, HelpCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAppStore } from '../../../shared/store/useAppStore';
+import DataTable, { type IColumn } from '../../../shared/components/DataTable';
+
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function BlogManager() {
   const [blogs, setBlogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [formData, setFormData] = useState({ id: '', title: '', content: '', category: 'Devlog' });
   const [file, setFile] = useState<File | null>(null);
   const { addNotification } = useAppStore();
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const fetchBlogs = async () => {
     try {
+      setLoading(true);
       const res = await api.get('/api/blogs');
       setBlogs(res.data.data);
     } catch (err) {
       console.error(err);
+      addNotification('Failed to fetch devlogs!', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,13 +86,79 @@ export default function BlogManager() {
     }
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(blogs.length / itemsPerPage);
+  const currentData = blogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const columns: IColumn<any>[] = [
+    {
+      header: 'Post Title',
+      render: (blog: any) => (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-stone-100 rounded-xl overflow-hidden border border-stone-200/60 flex-shrink-0 flex items-center justify-center">
+            {blog.thumbnail ? (
+              <img src={`${BASE_URL}/${blog.thumbnail}`} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider">No Image</span>
+            )}
+          </div>
+          <span className="font-bold text-stone-800 text-sm leading-snug line-clamp-2">{blog.title}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Category',
+      render: (blog: any) => (
+        <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-stone-100 text-stone-500 border border-stone-200/40 tracking-wider">
+          {blog.category || 'Devlog'}
+        </span>
+      )
+    },
+    {
+      header: 'Published',
+      render: (blog: any) => (
+        <span className="text-stone-400 font-semibold text-xs">
+          {new Date(blog.createdAt).toLocaleDateString()}
+        </span>
+      )
+    },
+    {
+      header: '',
+      className: 'text-right',
+      render: (blog: any) => (
+        <div className="flex gap-1 justify-end">
+          <button 
+            onClick={() => handleEdit(blog)} 
+            className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-primary transition-all cursor-pointer"
+            title="Edit Devlog"
+          >
+            <Pencil size={15} />
+          </button>
+          <button 
+            onClick={() => handleDelete(blog.id)} 
+            className="p-2 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-500 transition-all cursor-pointer"
+            title="Delete Devlog"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Manage Devlogs</h2>
+      <div className="flex justify-between items-center pb-4 border-b border-stone-200">
+        <div>
+          <h2 className="text-3xl font-black text-stone-800 tracking-tight">Manage Devlogs</h2>
+          <p className="text-stone-500 text-xs font-bold uppercase tracking-widest mt-1">Publish stories and development journals</p>
+        </div>
         {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all text-white font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md shadow-primary/20">
-            <Plus size={18} /> New Devlog
+          <button 
+            onClick={() => setIsEditing(true)} 
+            className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all text-white text-xs font-black uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center gap-2 shadow-md shadow-primary/20 cursor-pointer"
+          >
+            <Plus size={16} /> New Devlog
           </button>
         )}
       </div>
@@ -88,11 +166,11 @@ export default function BlogManager() {
       {isEditing ? (
         <form onSubmit={handleSubmit} className="bg-stone-50/50 p-10 rounded-[2.5rem] border border-stone-200 space-y-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold">{formData.id ? 'Edit' : 'New'} Devlog</h3>
+            <h3 className="font-bold text-stone-800 text-lg">{formData.id ? 'Edit' : 'New'} Devlog</h3>
             <button 
               type="button" 
               onClick={() => setIsPreview(!isPreview)}
-              className="text-xs bg-stone-200/50 hover:bg-stone-200 dark:bg-white/10 dark:hover:bg-white/20 text-stone-700 dark:text-white px-3.5 py-1.5 rounded-lg flex items-center gap-2 transition-all font-bold"
+              className="text-xs bg-stone-200/50 hover:bg-stone-200 text-stone-700 px-3.5 py-1.5 rounded-xl flex items-center gap-2 transition-all font-bold cursor-pointer"
             >
               <Eye size={14} /> {isPreview ? 'Editor' : 'Preview'}
             </button>
@@ -158,41 +236,36 @@ export default function BlogManager() {
               </div>
             </div>
           ) : (
-            <div className="prose prose-invert max-w-none bg-white/5 p-6 rounded-xl border border-white/5 min-h-[400px]">
+            <div className="prose max-w-none bg-white p-8 rounded-[2rem] border border-stone-200 min-h-[400px]">
               <ReactMarkdown>{formData.content || '*No content to preview*'}</ReactMarkdown>
             </div>
           )}
 
-          <div className="flex gap-3 pt-4 border-t border-white/5">
-            <button type="submit" className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md shadow-primary/10">
+          <div className="flex gap-3 pt-4 border-t border-stone-200">
+            <button type="submit" className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl flex items-center gap-2 shadow-md shadow-primary/10 cursor-pointer">
               <Save size={18} /> Save Post
             </button>
-            <button type="button" onClick={() => { setIsEditing(false); resetForm(); }} className="bg-stone-200/50 hover:bg-stone-200 dark:bg-white/10 dark:hover:bg-white/20 text-stone-700 dark:text-white font-bold px-6 py-2.5 rounded-xl transition-all">
+            <button 
+              type="button" 
+              onClick={() => { setIsEditing(false); resetForm(); }} 
+              className="bg-stone-200/50 hover:bg-stone-200 text-stone-700 font-bold px-6 py-3.5 rounded-2xl transition-all cursor-pointer"
+            >
               Cancel
             </button>
           </div>
         </form>
       ) : (
-        <div className="grid gap-4">
-          {blogs.map((blog) => (
-            <div key={blog.id} className="bg-white/5 p-4 rounded-xl border border-white/5 flex justify-between items-center hover:bg-white/[0.07] transition-colors">
-              <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 bg-slate-800 rounded flex items-center justify-center text-xs text-slate-500 overflow-hidden">
-                   {blog.thumbnail ? <img src={`http://localhost:5000/${blog.thumbnail}`} className="w-full h-full object-cover" /> : 'No Img'}
-                 </div>
-                 <div>
-                   <h4 className="font-semibold">{blog.title}</h4>
-                   <p className="text-xs text-slate-500">{new Date(blog.createdAt).toLocaleDateString()}</p>
-                 </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleEdit(blog)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400"><Pencil size={18} /></button>
-                <button onClick={() => handleDelete(blog.id)} className="p-2 hover:bg-red-500/10 rounded-lg text-red-400"><Trash2 size={18} /></button>
-              </div>
-            </div>
-          ))}
-          {blogs.length === 0 && <p className="text-center text-slate-600 py-10">No devlogs yet. Share your progress!</p>}
-        </div>
+        <DataTable
+          data={currentData}
+          columns={columns}
+          isLoading={loading}
+          emptyMessage="No devlogs yet. Share your progress!"
+          pagination={{
+            currentPage,
+            totalPages,
+            onPageChange: (page) => setCurrentPage(page),
+          }}
+        />
       )}
     </div>
   );

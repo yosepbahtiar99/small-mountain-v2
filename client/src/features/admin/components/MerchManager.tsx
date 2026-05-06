@@ -1,22 +1,33 @@
 import { useState, useEffect } from 'react';
 import api from '../../../shared/lib/axios';
-import { Plus, Pencil, Trash2, Save, X, ExternalLink, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload } from 'lucide-react';
 import { useAppStore } from '../../../shared/store/useAppStore';
+import DataTable, { type IColumn } from '../../../shared/components/DataTable';
+
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function MerchManager() {
   const [merch, setMerch] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ id: '', name: '', price: 0, shopeeLink: '' });
   const [file, setFile] = useState<File | null>(null);
   const { addNotification } = useAppStore();
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const fetchMerch = async () => {
     try {
+      setLoading(true);
       const res = await api.get('/api/merch');
       setMerch(res.data.data);
     } catch (err: any) {
       console.error(err);
       addNotification('Failed to fetch merchandise!', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,6 +85,69 @@ export default function MerchManager() {
     }
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(merch.length / itemsPerPage);
+  const currentData = merch.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const columns: IColumn<any>[] = [
+    {
+      header: 'Product',
+      render: (item: any) => (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-stone-100 rounded-xl overflow-hidden border border-stone-200/60 flex-shrink-0 flex items-center justify-center">
+            {item.thumbnail ? (
+              <img src={`${BASE_URL}/${item.thumbnail}`} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider">No Image</span>
+            )}
+          </div>
+          <span className="font-bold text-stone-800 text-sm leading-snug line-clamp-2">{item.name}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Price',
+      render: (item: any) => (
+        <span className="text-orange-500 font-black text-sm">Rp {item.price.toLocaleString()}</span>
+      )
+    },
+    {
+      header: 'Store',
+      render: (item: any) => (
+        <a 
+          href={item.shopeeLink} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors"
+        >
+          Shopee <ExternalLink size={12} />
+        </a>
+      )
+    },
+    {
+      header: '',
+      className: 'text-right',
+      render: (item: any) => (
+        <div className="flex gap-1 justify-end">
+          <button 
+            onClick={() => handleEdit(item)} 
+            className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-primary transition-all cursor-pointer"
+            title="Edit Product"
+          >
+            <Pencil size={15} />
+          </button>
+          <button 
+            onClick={() => handleDelete(item.id)} 
+            className="p-2 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-500 transition-all cursor-pointer"
+            title="Delete Product"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header Area */}
@@ -85,7 +159,7 @@ export default function MerchManager() {
         {!isEditing && (
           <button 
             onClick={() => setIsEditing(true)} 
-            className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white text-xs font-black uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 hover:scale-[1.02] transition-all"
+            className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white text-xs font-black uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 hover:scale-[1.02] transition-all cursor-pointer"
           >
             <Plus size={16} /> Add Product
           </button>
@@ -149,14 +223,14 @@ export default function MerchManager() {
           <div className="flex gap-4 pt-4">
             <button 
               type="submit" 
-              className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+              className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
             >
               <Save size={16} /> Save Product
             </button>
             <button 
               type="button" 
               onClick={() => { setIsEditing(false); resetForm(); }} 
-              className="bg-stone-200/50 hover:bg-stone-200/80 text-stone-700 text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl active:scale-95 transition-all"
+              className="bg-stone-200/50 hover:bg-stone-200/80 text-stone-700 text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl active:scale-95 transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -164,62 +238,17 @@ export default function MerchManager() {
         </form>
       ) : (
         /* List Cards Area */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {merch.map((item) => (
-            <div 
-              key={item.id} 
-              className="bg-white border border-stone-200 p-5 rounded-[2rem] shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between"
-            >
-              <div className="flex gap-4">
-                {/* Image Showcase */}
-                <div className="w-24 h-24 bg-stone-100 rounded-2xl overflow-hidden border border-stone-200/60 flex-shrink-0 flex items-center justify-center">
-                  {item.thumbnail ? (
-                    <img src={`http://localhost:5000/${item.thumbnail}`} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">No Image</span>
-                  )}
-                </div>
-                
-                {/* Meta details */}
-                <div className="space-y-1.5 flex-1">
-                  <h4 className="font-bold text-stone-800 text-lg leading-snug line-clamp-2">{item.name}</h4>
-                  <p className="text-orange-500 font-black text-sm">Rp {item.price.toLocaleString()}</p>
-                </div>
-              </div>
-
-              {/* Card Actions */}
-              <div className="flex justify-between items-center mt-5 pt-4 border-t border-stone-100">
-                <a 
-                  href={item.shopeeLink} 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-400 hover:text-orange-500 transition-colors"
-                >
-                  Shopee <ExternalLink size={12} />
-                </a>
-                <div className="flex gap-1">
-                  <button 
-                    onClick={() => handleEdit(item)} 
-                    className="p-2.5 hover:bg-stone-100 active:scale-90 text-stone-500 hover:text-primary transition-all rounded-xl"
-                  >
-                    <Pencil size={15} />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(item.id)} 
-                    className="p-2.5 hover:bg-red-50 active:scale-90 text-stone-400 hover:text-red-500 transition-all rounded-xl"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-          {merch.length === 0 && (
-            <p className="text-center text-stone-500 py-16 col-span-full font-bold uppercase tracking-wider text-sm border-2 border-dashed border-stone-200 rounded-[2.5rem]">
-              No products in store yet.
-            </p>
-          )}
-        </div>
+        <DataTable
+          data={currentData}
+          columns={columns}
+          isLoading={loading}
+          emptyMessage="No products in store yet."
+          pagination={{
+            currentPage,
+            totalPages,
+            onPageChange: (page) => setCurrentPage(page),
+          }}
+        />
       )}
     </div>
   );

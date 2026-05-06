@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Gamepad2, ChevronRight, MessageSquare, Send, Sparkles, Mountain, Cloud } from 'lucide-react';
+import { ChevronRight, Send, Sparkles, Mountain } from 'lucide-react';
 import api from '../../../shared/lib/axios';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function LandingPage() {
   const { t } = useTranslation();

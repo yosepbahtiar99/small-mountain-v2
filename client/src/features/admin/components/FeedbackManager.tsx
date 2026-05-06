@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
 import api from '../../../shared/lib/axios';
-import { Trash2, Mail, CheckCircle, Clock } from 'lucide-react';
+import { Trash2, CheckCircle, Clock } from 'lucide-react';
+import DataTable, { type IColumn } from '../../../shared/components/DataTable';
 
 export default function FeedbackManager() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchFeedback = async () => {
-    const res = await api.get('/api/feedback');
-    setFeedbacks(res.data.data);
+    try {
+      setLoading(true);
+      const res = await api.get('/api/feedback');
+      setFeedbacks(res.data.data);
+    } catch (err) {
+      console.error('Failed to fetch feedback:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -15,54 +26,127 @@ export default function FeedbackManager() {
   }, []);
 
   const handleMarkAsRead = async (id: string) => {
-    await api.put(`/api/feedback/${id}/read`);
-    fetchFeedback();
+    try {
+      await api.put(`/api/feedback/${id}/read`);
+      fetchFeedback();
+    } catch (err) {
+      console.error('Failed to mark feedback as read:', err);
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Delete this feedback?')) {
-      await api.delete(`/api/feedback/${id}`);
-      fetchFeedback();
+      try {
+        await api.delete(`/api/feedback/${id}`);
+        fetchFeedback();
+      } catch (err) {
+        console.error('Failed to delete feedback:', err);
+      }
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-bold">User Feedback</h2>
-      
-      <div className="grid gap-4">
-        {feedbacks.map((f) => (
-          <div key={f.id} className={`p-6 rounded-2xl border transition-all ${f.isRead ? 'bg-white/2 border-white/5 opacity-60' : 'bg-white/5 border-primary/20 shadow-lg shadow-primary/5'}`}>
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${f.isRead ? 'bg-slate-800' : 'bg-primary/20'}`}>
-                  <Mail size={18} className={f.isRead ? 'text-slate-500' : 'text-primary'} />
-                </div>
-                <div>
-                  <h4 className="font-bold">{f.name}</h4>
-                  <p className="text-xs text-slate-400">{f.email}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {!f.isRead && (
-                  <button onClick={() => handleMarkAsRead(f.id)} className="p-2 hover:bg-emerald-500/10 rounded-lg text-emerald-400" title="Mark as Read">
-                    <CheckCircle size={18} />
-                  </button>
-                )}
-                <button onClick={() => handleDelete(f.id)} className="p-2 hover:bg-red-500/10 rounded-lg text-red-400">
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-            <p className="text-slate-300 text-sm leading-relaxed">{f.message}</p>
-            <div className="mt-4 flex items-center gap-1 text-[10px] text-slate-500 uppercase tracking-widest">
-              <Clock size={10} />
-              {new Date(f.createdAt).toLocaleString()}
-            </div>
+  // Client-side pagination logic
+  const totalPages = Math.ceil(feedbacks.length / itemsPerPage);
+  const currentData = feedbacks.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const columns: IColumn<any>[] = [
+    {
+      header: 'Sender',
+      render: (f: any) => (
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center border font-bold text-xs transition-colors ${
+            f.isRead 
+              ? 'bg-stone-100 border-stone-200 text-stone-400' 
+              : 'bg-primary/5 border-primary/10 text-primary'
+          }`}>
+            {f.name.charAt(0).toUpperCase()}
           </div>
-        ))}
-        {feedbacks.length === 0 && <p className="text-center text-slate-600 py-10">No feedback received yet.</p>}
+          <div>
+            <div className={`font-bold leading-tight ${f.isRead ? 'text-stone-400' : 'text-warm-text'}`}>{f.name}</div>
+            <div className="text-[11px] text-stone-400 font-medium mt-0.5">{f.email}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Message',
+      render: (f: any) => (
+        <p className={`line-clamp-2 max-w-sm xl:max-w-md ${f.isRead ? 'text-stone-400 font-medium' : 'text-stone-600 font-semibold'}`}>
+          {f.message}
+        </p>
+      )
+    },
+    {
+      header: 'Received At',
+      render: (f: any) => (
+        <div className="flex items-center gap-1.5 text-xs text-stone-400 font-semibold">
+          <Clock size={12} />
+          {new Date(f.createdAt).toLocaleDateString()}
+        </div>
+      )
+    },
+    {
+      header: 'Status',
+      render: (f: any) => (
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+          f.isRead 
+            ? 'bg-stone-50 text-stone-400 border border-stone-100' 
+            : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+        }`}>
+          <span className={`w-1 h-1 rounded-full ${f.isRead ? 'bg-stone-300' : 'bg-emerald-500'}`} />
+          {f.isRead ? 'Read' : 'New'}
+        </span>
+      )
+    },
+    {
+      header: '',
+      className: 'text-right',
+      render: (f: any) => (
+        <div className="flex gap-1 justify-end">
+          {!f.isRead && (
+            <button 
+              onClick={() => handleMarkAsRead(f.id)} 
+              className="p-2 hover:bg-emerald-50 rounded-lg text-emerald-600 transition-colors cursor-pointer" 
+              title="Mark as Read"
+            >
+              <CheckCircle size={16} />
+            </button>
+          )}
+          <button 
+            onClick={() => handleDelete(f.id)} 
+            className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition-colors cursor-pointer"
+            title="Delete Feedback"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-black text-warm-text tracking-tight">User Feedback</h2>
+        <span className="text-xs font-black uppercase tracking-wider text-stone-400 bg-stone-100/50 px-4 py-2 rounded-xl border border-stone-200/40">
+          Total: {feedbacks.length} Items
+        </span>
       </div>
+      
+      <DataTable
+        data={currentData}
+        columns={columns}
+        isLoading={loading}
+        emptyMessage="No feedback received yet."
+        pagination={{
+          currentPage,
+          totalPages,
+          onPageChange: (page) => setCurrentPage(page),
+        }}
+      />
     </div>
   );
 }

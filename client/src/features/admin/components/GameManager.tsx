@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../../../shared/lib/axios';
-import { Plus, Pencil, Trash2, Save, X, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Save, Upload } from 'lucide-react';
 import { useAppStore } from '../../../shared/store/useAppStore';
+import DataTable, { type IColumn } from '../../../shared/components/DataTable';
+
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function GameManager() {
   const [games, setGames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     id: '',
@@ -17,12 +21,20 @@ export default function GameManager() {
   const [file, setFile] = useState<File | null>(null);
   const { addNotification } = useAppStore();
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const fetchGames = async () => {
     try {
+      setLoading(true);
       const res = await api.get('/api/games');
       setGames(res.data.data);
     } catch (err) {
       console.error(err);
+      addNotification('Failed to fetch games!', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,7 +88,7 @@ export default function GameManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure?')) {
+    if (confirm('Are you sure you want to delete this game?')) {
       try {
         await api.delete(`/api/games/${id}`);
         addNotification('Game deleted successfully!', 'success');
@@ -88,23 +100,94 @@ export default function GameManager() {
     }
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(games.length / itemsPerPage);
+  const currentData = games.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const columns: IColumn<any>[] = [
+    {
+      header: 'Game',
+      render: (game: any) => (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-stone-100 rounded-xl overflow-hidden border border-stone-200/60 flex-shrink-0 flex items-center justify-center">
+            {game.thumbnail ? (
+              <img src={`${BASE_URL}/${game.thumbnail}`} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider">No Image</span>
+            )}
+          </div>
+          <span className="font-bold text-stone-800 text-sm leading-snug line-clamp-2">{game.title}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Status',
+      render: (game: any) => {
+        const isReleased = game.status === 'Released';
+        return (
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+            isReleased 
+              ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
+              : 'bg-orange-50 text-orange-600 border border-orange-100'
+          }`}>
+            <span className={`w-1 h-1 rounded-full ${isReleased ? 'bg-emerald-500' : 'bg-orange-500'}`} />
+            {game.status}
+          </span>
+        );
+      }
+    },
+    {
+      header: 'Description',
+      render: (game: any) => (
+        <p className="text-stone-400 font-medium text-xs max-w-xs xl:max-w-md line-clamp-2 leading-relaxed">
+          {game.description || 'No description provided.'}
+        </p>
+      )
+    },
+    {
+      header: '',
+      className: 'text-right',
+      render: (game: any) => (
+        <div className="flex gap-1 justify-end">
+          <button 
+            onClick={() => handleEdit(game)} 
+            className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-primary transition-all cursor-pointer"
+            title="Edit Game"
+          >
+            <Pencil size={15} />
+          </button>
+          <button 
+            onClick={() => handleDelete(game.id)} 
+            className="p-2 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-500 transition-all cursor-pointer"
+            title="Delete Game"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Manage Games</h2>
+      <div className="flex justify-between items-center pb-4 border-b border-stone-200">
+        <div>
+          <h2 className="text-3xl font-black text-stone-800 tracking-tight">Manage Games</h2>
+          <p className="text-stone-500 text-xs font-bold uppercase tracking-widest mt-1">Add and edit catalog projects</p>
+        </div>
         {!isEditing && (
           <button 
             onClick={() => setIsEditing(true)}
-            className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md shadow-primary/20"
+            className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white text-xs font-black uppercase tracking-wider px-6 py-3 rounded-2xl flex items-center gap-2 transition-all shadow-md shadow-primary/20 cursor-pointer"
           >
-            <Plus size={18} /> Add New Game
+            <Plus size={16} /> Add New Game
           </button>
         )}
       </div>
 
       {isEditing ? (
         <form onSubmit={handleSubmit} className="bg-stone-50/50 p-10 rounded-[2.5rem] border border-stone-200 space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-wider text-stone-500">Game Title</label>
               <input 
@@ -122,8 +205,8 @@ export default function GameManager() {
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
               >
-                <option value="Development" className="bg-white text-stone-800">Development</option>
-                <option value="Released" className="bg-white text-stone-800">Released</option>
+                <option value="Development" className="bg-white text-stone-800 font-bold">Development</option>
+                <option value="Released" className="bg-white text-stone-800 font-bold">Released</option>
               </select>
             </div>
           </div>
@@ -167,43 +250,30 @@ export default function GameManager() {
           </div>
 
           <div className="flex gap-3 pt-4">
-            <button type="submit" className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md shadow-primary/10">
+            <button type="submit" className="bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-2xl flex items-center gap-2 transition-all shadow-md shadow-primary/10 cursor-pointer">
               <Save size={18} /> Save Game
             </button>
             <button 
               type="button" 
               onClick={() => { setIsEditing(false); resetForm(); }}
-              className="bg-stone-200/50 hover:bg-stone-200 dark:bg-white/10 dark:hover:bg-white/20 text-stone-700 dark:text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all"
+              className="bg-stone-200/50 hover:bg-stone-200 text-stone-700 font-bold px-6 py-3.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer"
             >
-              <X size={18} /> Cancel
+              Cancel
             </button>
           </div>
         </form>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {games.map((game) => (
-            <div key={game.id} className="bg-white/50 p-6 rounded-[2rem] border border-stone-200 flex justify-between items-center shadow-sm">
-              <div className="flex items-center gap-4">
-                {game.thumbnail && (
-                  <img src={`http://localhost:5000/${game.thumbnail}`} className="w-12 h-12 object-cover rounded-lg" />
-                )}
-                <div>
-                  <h4 className="font-bold">{game.title}</h4>
-                  <p className="text-xs text-slate-500">{game.status}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleEdit(game)} className="p-2 hover:bg-white/10 rounded-lg text-slate-400">
-                  <Pencil size={18} />
-                </button>
-                <button onClick={() => handleDelete(game.id)} className="p-2 hover:bg-red-500/10 rounded-lg text-red-400">
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          ))}
-          {games.length === 0 && <p className="text-center text-slate-600 py-10">No games found. Add your first project!</p>}
-        </div>
+        <DataTable
+          data={currentData}
+          columns={columns}
+          isLoading={loading}
+          emptyMessage="No games found. Add your first project!"
+          pagination={{
+            currentPage,
+            totalPages,
+            onPageChange: (page) => setCurrentPage(page),
+          }}
+        />
       )}
     </div>
   );

@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Gamepad2, FileText, MessageSquare, ShoppingBag, LogOut, LayoutDashboard, Mountain, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../../../shared/store/useAuthStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameManager from '../components/GameManager';
 import BlogManager from '../components/BlogManager';
@@ -9,7 +8,13 @@ import FeedbackManager from '../components/FeedbackManager';
 import MerchManager from '../components/MerchManager';
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
+
+  const setActiveTab = (tabId: string) => {
+    setSearchParams({ tab: tabId });
+  };
+
   const logout = useAuthStore(state => state.logout);
   const navigate = useNavigate();
 
@@ -27,11 +32,11 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-warm-bg text-warm-text font-sans">
+    <div className="h-screen flex overflow-hidden bg-warm-bg text-warm-text font-sans">
       <div className="grain-overlay" />
       
       {/* Sidebar */}
-      <aside className="w-80 border-r border-stone-200 bg-white/30 backdrop-blur-xl p-10 hidden md:flex flex-col relative z-20">
+      <aside className="w-80 border-r border-stone-200 bg-white/30 backdrop-blur-xl p-10 hidden md:flex flex-col relative z-20 h-full">
         <div className="flex items-center gap-4 mb-16">
           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/10">
             <Mountain size={20} className="text-primary" />
@@ -73,7 +78,7 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-12 overflow-y-auto relative z-10">
+      <main className="flex-1 p-12 overflow-y-auto relative z-10 h-full">
         <header className="flex justify-between items-center mb-16">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Calendar, User, Tag, PenTool } from 'lucide-react';
+import { ChevronLeft, Calendar, User, PenTool } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import api from '../../../shared/lib/axios';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
