@@ -22,7 +22,7 @@ const createMerch = async (req, res, next) => {
       thumbnail
     });
 
-    return successResponse(res, 'Merch created', merch, 21);
+    return successResponse(res, 'Merch created', merch, 201);
   } catch (error) {
     next(error);
   }

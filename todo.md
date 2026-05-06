@@ -3,7 +3,7 @@
 ## 🛠️ Phase 1: Foundation & Backend Core
 - [x] Refactoring base folders (sudah ada pondasi awal).
 - [x] Backend: Setup Database Connection (Sequelize) dengan `sync({ force: true })`.
-- [x] Backend: Setup Multer untuk `/uploads` lokal.
+- [x] Backend: Setup Multer dengan **Smart Deduplication (SHA-256 Hashing)** untuk `/uploads`.
 - [x] Backend: Base API Response handler & Error middleware.
 
 ## 🔐 Phase 2: Auth & Admin System
@@ -28,3 +28,4 @@
 - [x] Adding Framer Motion animations (Smooth transitions).
 - [x] Adding OG Tags logic for better social sharing.
 - [x] Final UI Review (Glassmorphism & Bento consistency).
+- [x] Frontend: Global Toast Notification (Zustand) untuk visual feedback Admin.

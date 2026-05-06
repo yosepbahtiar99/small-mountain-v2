@@ -24,7 +24,17 @@ const getGameBySlug = async (req, res, next) => {
 const createGame = async (req, res, next) => {
   try {
     const { title, description, status, progress, playLink } = req.body;
-    const slug = slugify(title);
+    
+    if (!title) {
+      return errorResponse(res, 'Title is required', 400);
+    }
+
+    let slug = slugify(title);
+    const existingSlug = await Game.findOne({ where: { slug } });
+    if (existingSlug) {
+      slug = `${slug}-${Date.now()}`;
+    }
+
     const thumbnail = req.file ? req.file.path : null;
 
     const game = await Game.create({
@@ -34,10 +44,10 @@ const createGame = async (req, res, next) => {
       status,
       progress: JSON.parse(progress || '{}'),
       thumbnail,
-      playLink
+      playLink: playLink || null
     });
 
-    return successResponse(res, 'Game created', game, 21);
+    return successResponse(res, 'Game created', game, 201);
   } catch (error) {
     next(error);
   }
@@ -54,10 +64,17 @@ const updateGame = async (req, res, next) => {
       description,
       status,
       progress: JSON.parse(progress || '{}'),
-      playLink
+      playLink: playLink || null
     };
 
-    if (title) updateData.slug = slugify(title);
+    if (title && title !== game.title) {
+      let slug = slugify(title);
+      const existingSlug = await Game.findOne({ where: { slug } });
+      if (existingSlug && existingSlug.id !== game.id) {
+        slug = `${slug}-${Date.now()}`;
+      }
+      updateData.slug = slug;
+    }
     if (req.file) updateData.thumbnail = req.file.path;
 
     await game.update(updateData);

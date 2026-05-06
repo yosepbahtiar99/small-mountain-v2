@@ -24,7 +24,17 @@ const getBlogBySlug = async (req, res, next) => {
 const createBlog = async (req, res, next) => {
   try {
     const { title, content, category } = req.body;
-    const slug = slugify(title);
+    
+    if (!title || !content) {
+      return errorResponse(res, 'Title and content are required', 400);
+    }
+
+    let slug = slugify(title);
+    const existingSlug = await Blog.findOne({ where: { slug } });
+    if (existingSlug) {
+      slug = `${slug}-${Date.now()}`;
+    }
+
     const thumbnail = req.file ? req.file.path : null;
 
     const blog = await Blog.create({
@@ -35,7 +45,7 @@ const createBlog = async (req, res, next) => {
       thumbnail
     });
 
-    return successResponse(res, 'Blog created', blog, 21);
+    return successResponse(res, 'Blog created', blog, 201);
   } catch (error) {
     next(error);
   }
@@ -48,7 +58,16 @@ const updateBlog = async (req, res, next) => {
     if (!blog) return errorResponse(res, 'Blog not found', 404);
 
     const updateData = { title, content, category };
-    if (title) updateData.slug = slugify(title);
+    
+    if (title && title !== blog.title) {
+      let slug = slugify(title);
+      const existingSlug = await Blog.findOne({ where: { slug } });
+      if (existingSlug && existingSlug.id !== blog.id) {
+        slug = `${slug}-${Date.now()}`;
+      }
+      updateData.slug = slug;
+    }
+
     if (req.file) updateData.thumbnail = req.file.path;
 
     await blog.update(updateData);

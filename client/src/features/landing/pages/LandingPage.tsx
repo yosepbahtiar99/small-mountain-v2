@@ -141,7 +141,7 @@ export default function LandingPage() {
           <div className="md:col-span-4 glass-warm rounded-[4rem] border border-stone-200/50 p-12 flex flex-col justify-between group bg-stone-50/30">
              <div className="space-y-8">
                 <Sparkles size={48} className="text-primary/30" />
-                <h3 className="text-4xl font-black text-warm-text leading-tight">Twilight Studio</h3>
+                <h3 className="text-4xl font-black text-warm-text leading-tight">SMALL MOUNTAIN</h3>
                 <p className="text-stone-500 font-medium leading-relaxed text-lg">We find our best ideas when the sky turns blue and the mountain goes quiet.</p>
              </div>
              <div className="space-y-4">

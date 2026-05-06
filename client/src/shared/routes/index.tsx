@@ -9,6 +9,7 @@ import LoginPage from '../../features/auth/pages/LoginPage';
 import DashboardPage from '../../features/admin/pages/DashboardPage';
 import { useAuthStore } from '../store/useAuthStore';
 import { useEffect } from 'react';
+import NotificationToast from '../components/NotificationToast';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
@@ -50,5 +51,10 @@ const router = createBrowserRouter([
 ]);
 
 export const AppRouter = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <NotificationToast />
+    </>
+  );
 };

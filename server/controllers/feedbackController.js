@@ -14,7 +14,7 @@ const createFeedback = async (req, res, next) => {
   try {
     const { name, email, message } = req.body;
     const feedback = await Feedback.create({ name, email, message });
-    return successResponse(res, 'Feedback sent successfully', feedback, 21);
+    return successResponse(res, 'Feedback sent successfully', feedback, 201);
   } catch (error) {
     next(error);
   }
