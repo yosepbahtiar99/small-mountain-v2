@@ -83,7 +83,7 @@ export default function MainLayout() {
            <div className="flex justify-center mb-6">
               <Mountain size={40} className="text-primary/10" />
            </div>
-           <h2 className="text-3xl font-black text-warm-text mb-2 tracking-tight">Small Mountain</h2>
+           <h2 className="text-3xl font-black text-warm-text mb-2 tracking-tight">Small Mountain<sup className="text-[0.5em] ml-0.5 relative -top-[1em] opacity-80 font-bold">™</sup></h2>
            <p className="text-stone-500 text-sm max-w-sm mx-auto mb-10 font-medium leading-relaxed">
              Twilight stories from the highest peaks.
            </p>

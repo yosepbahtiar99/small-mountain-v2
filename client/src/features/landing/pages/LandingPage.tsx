@@ -54,7 +54,7 @@ export default function LandingPage() {
             </div>
             <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tight leading-[0.85] text-warm-text">
               SMALL <br />
-              <span className="text-primary">Mountain.</span> <br />
+              <span className="text-primary">Mountain<sup className="text-[0.4em] ml-0.5 relative -top-[1.2em] opacity-80 font-bold">™</sup></span> <br />
             </h1>
             <p className="text-stone-500 text-xl max-w-sm leading-relaxed font-medium">
               {t('studio_tagline')}
@@ -144,7 +144,7 @@ export default function LandingPage() {
           <div className="md:col-span-4 glass-warm rounded-[4rem] border border-stone-200/50 p-12 flex flex-col justify-between group bg-stone-50/30">
             <div className="space-y-8">
               <Sparkles size={48} className="text-primary/30" />
-              <h3 className="text-4xl font-black text-warm-text leading-tight">SMALL MOUNTAIN</h3>
+              <h3 className="text-4xl font-black text-warm-text leading-tight">SMALL MOUNTAIN<sup className="text-[0.5em] ml-0.5 relative -top-[1em] opacity-80 font-bold">™</sup></h3>
               <p className="text-stone-500 font-medium leading-relaxed text-lg">We find our best ideas when the sky turns blue and the mountain goes quiet.</p>
             </div>
             <div className="space-y-4">
