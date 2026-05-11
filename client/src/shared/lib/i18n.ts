@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       "studio_name": "Small Mountain™",
-      "studio_tagline": "Creating immersive visual stories and simple interactive experiences.",
+      "studio_tagline": "Creating stories, brick by brick.",
       "featured_game": "Featured Game",
       "released_games": "Released Games",
       "devlogs": "Development Logs",
@@ -23,7 +23,7 @@ const resources = {
   id: {
     translation: {
       "studio_name": "Small Mountain™",
-      "studio_tagline": "Menciptakan cerita visual yang imersif dan pengalaman interaktif sederhana.",
+      "studio_tagline": "Menciptakan cerita, bata demi bata.",
       "featured_game": "Game Unggulan",
       "released_games": "Game Rilis",
       "devlogs": "Catatan Pengembangan",
