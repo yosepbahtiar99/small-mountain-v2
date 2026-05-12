@@ -1,30 +1,69 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Send, Sparkles, Mountain } from 'lucide-react';
+import { ChevronRight, Send, Sparkles, Mountain, FileText, Calendar, MessageCircle } from 'lucide-react';
 import api from '../../../shared/lib/axios';
 
 const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 export default function LandingPage() {
   const { t } = useTranslation();
-  const [featuredGame, setFeaturedGame] = useState<any>(null);
+  const [featuredGames, setFeaturedGames] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [recentBlogs, setRecentBlogs] = useState<any[]>([]);
   const [feedback, setFeedback] = useState({ name: '', email: '', message: '' });
+  const [stats, setStats] = useState({ totalGames: 0, totalBlogs: 0 });
   const [isSent, setIsSent] = useState(false);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get('/api/games');
-        const game = res.data.data.find((g: any) => g.status === 'Development') || res.data.data[0];
-        setFeaturedGame(game);
+        const [gameRes, blogRes] = await Promise.all([
+          api.get('/api/games'),
+          api.get('/api/blogs')
+        ]);
+        
+        const allGames = gameRes.data.data || [];
+        const allBlogs = blogRes.data.data || [];
+
+        // Sort descending to ensure we ALWAYS get newest first
+        const chronologicalGames = [...allGames].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        // Logika Pintar: 1 Paling baru dari Development & 1 Paling baru dari Released
+        const newestDev = chronologicalGames.find((g: any) => g.status === 'Development');
+        const newestRel = chronologicalGames.find((g: any) => g.status === 'Released');
+
+        const displaySlideArray = [newestDev, newestRel].filter(Boolean);
+        setFeaturedGames(displaySlideArray);
+        
+        // Take latest 2 blogs
+        setRecentBlogs(allBlogs.slice(0, 2));
+
+        // Store Statistics
+        setStats({
+          totalGames: allGames.length,
+          totalBlogs: allBlogs.length
+        });
       } catch (err) {
         console.error(err);
       }
     };
-    fetchFeatured();
+    fetchData();
   }, []);
+
+  // Auto-Slideshow timer logic: 5 Seconds
+  useEffect(() => {
+    if (featuredGames.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredGames.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [featuredGames]);
+
+  const activeGame = featuredGames[currentIndex];
 
   const handleFeedback = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,53 +158,177 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {featuredGame && (
-            <motion.div
-              whileHover={{ y: -8 }}
-              className="md:col-span-8 glass-warm rounded-[4rem] border border-stone-200/50 overflow-hidden group relative min-h-[600px] shadow-sm"
-            >
-              <div className="absolute inset-0 opacity-80 group-hover:scale-105 transition-all duration-1000">
-                {featuredGame.thumbnail ? (
-                  <img src={`${BASE_URL}/${featuredGame.thumbnail}`} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-stone-50" />
-                )}
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-warm-bg via-warm-bg/40 to-transparent" />
-              <div className="relative p-8 md:p-16 h-full flex flex-col justify-end space-y-8">
-                <div className="flex items-center gap-3">
-                  <div className="h-px w-10 bg-primary" />
-                  <span className="text-primary text-[10px] font-black uppercase tracking-widest">
-                    {featuredGame.status}
-                  </span>
-                </div>
-                <h3 className="text-4xl md:text-6xl font-black text-warm-text leading-none tracking-tighter">{featuredGame.title}</h3>
-                <p className="text-stone-600 max-w-lg text-lg font-medium leading-relaxed">{featuredGame.description}</p>
-                <div className="flex gap-12 pt-4">
-                  {Object.entries(featuredGame.progress || {}).map(([key, val]: [string, any]) => (
-                    <div key={key} className="space-y-3">
-                      <p className="text-[10px] uppercase font-black tracking-[0.2em] text-stone-400">{key}</p>
-                      <p className="text-2xl text-warm-text">{val}%</p>
+          <div className="md:col-span-8 relative h-full min-h-[600px]">
+            <AnimatePresence mode="wait">
+              {activeGame && (
+                <motion.div
+                  key={activeGame.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  whileHover={{ y: -8 }}
+                  className="absolute inset-0 glass-warm rounded-[4rem] border border-stone-200/50 overflow-hidden group shadow-sm h-full"
+                >
+                  <div className="absolute inset-0 opacity-80 group-hover:scale-105 transition-all duration-1000">
+                    {activeGame.thumbnail ? (
+                      <img src={`${BASE_URL}/${activeGame.thumbnail}`} alt={activeGame.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-stone-50" />
+                    )}
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-warm-bg via-warm-bg/40 to-transparent" />
+                  
+                  <div className="relative p-8 md:p-16 h-full flex flex-col justify-end space-y-8">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-10 bg-primary" />
+                      <span className="text-primary text-[10px] font-black uppercase tracking-widest">
+                        {activeGame.status}
+                      </span>
                     </div>
-                  ))}
+                    <h3 className="text-4xl md:text-6xl font-black text-warm-text leading-none tracking-tighter">{activeGame.title}</h3>
+                    <p className="text-stone-600 max-w-lg text-lg font-medium leading-relaxed line-clamp-3">{activeGame.description}</p>
+                    
+                    <div className="flex gap-12 pt-4">
+                      {Object.entries(activeGame.progress || {}).map(([key, val]: [string, any]) => (
+                        <div key={key} className="space-y-3">
+                          <p className="text-[10px] uppercase font-black tracking-[0.2em] text-stone-400">{key}</p>
+                          <p className="text-2xl text-warm-text">{val}%</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Navigation Dots Indicators */}
+            {featuredGames.length > 1 && (
+              <div className="absolute bottom-10 right-12 z-30 flex gap-2 bg-white/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-sm">
+                {featuredGames.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      currentIndex === idx 
+                        ? 'bg-primary w-6' 
+                        : 'bg-primary/20 hover:bg-primary/40'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="md:col-span-4 flex flex-col gap-6">
+            <div className="flex-1 glass-warm rounded-[3.5rem] border border-stone-200/50 p-10 flex flex-col justify-between group bg-stone-50/30 relative overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
+              <div className="space-y-6 relative z-10">
+                <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">
+                  <Sparkles size={12} /> Activity Radar
+                </div>
+                <h3 className="text-2xl font-black text-warm-text leading-tight tracking-tight">Studio Vitality</h3>
+              </div>
+
+              <div className="space-y-6 relative z-10 mt-8">
+                {/* Stat 1 */}
+                <div className="flex justify-between items-end border-b border-stone-200/60 pb-4">
+                   <div className="space-y-1">
+                     <p className="text-[10px] text-stone-400 uppercase font-black tracking-widest">Projects Created</p>
+                     <p className="text-sm text-stone-600 font-medium">Games Library</p>
+                   </div>
+                   <div className="text-4xl font-black text-warm-text leading-none">{stats.totalGames}</div>
+                </div>
+
+                {/* Stat 2 */}
+                <div className="flex justify-between items-end border-b border-stone-200/60 pb-4">
+                   <div className="space-y-1">
+                     <p className="text-[10px] text-stone-400 uppercase font-black tracking-widest">Journal Entries</p>
+                     <p className="text-sm text-stone-600 font-medium">Written Devlogs</p>
+                   </div>
+                   <div className="text-4xl font-black text-warm-text leading-none">{stats.totalBlogs}</div>
+                </div>
+
+                {/* Stat 3 */}
+                <div className="flex justify-between items-end pb-2">
+                   <div className="space-y-1">
+                     <p className="text-[10px] text-stone-400 uppercase font-black tracking-widest">Established</p>
+                     <p className="text-sm text-stone-600 font-medium">Since</p>
+                   </div>
+                   <div className="text-4xl font-black text-primary leading-none">2026</div>
                 </div>
               </div>
-            </motion.div>
-          )}
-
-          <div className="md:col-span-4 glass-warm rounded-[4rem] border border-stone-200/50 p-12 flex flex-col justify-between group bg-stone-50/30">
-            <div className="space-y-8">
-              <Sparkles size={48} className="text-primary/30" />
-              <h3 className="text-4xl font-black text-warm-text leading-tight">SMALL MOUNTAIN<sup className="text-[0.5em] ml-0.5 relative -top-[1em] opacity-80 font-bold">™</sup></h3>
-              <p className="text-stone-500 font-medium leading-relaxed text-lg">We find our best ideas when the sky turns blue and the mountain goes quiet.</p>
             </div>
-            <div className="space-y-4">
-              <div className="h-px w-full bg-stone-200" />
-              <p className="text-[10px] text-stone-400 uppercase font-black tracking-widest">Indie Heart</p>
+
+            <div className="h-32 bg-primary rounded-[2.5rem] flex items-center justify-center relative overflow-hidden shadow-lg group cursor-default">
+               <div className="absolute -right-8 -top-8 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-all duration-700" />
+               <div className="text-center relative z-10">
+                 <p className="text-[9px] text-blue-100/60 uppercase font-black tracking-[0.3em] mb-1">Studio Status</p>
+                 <h4 className="text-white font-black text-xl tracking-wide uppercase">Active & Building</h4>
+               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Latest Devlogs Section */}
+      {recentBlogs.length > 0 && (
+        <section className="max-w-7xl mx-auto px-8 pb-40">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
+                <FileText size={12} />
+                The Journal
+              </div>
+              <h2 className="text-5xl md:text-6xl font-black text-warm-text tracking-tight">Latest Updates</h2>
+            </div>
+            <Link to="/devlogs" className="text-primary font-black text-xs uppercase tracking-[0.2em] border-b-2 border-primary/20 pb-2 hover:border-primary transition-all">
+              Read All Devlogs <ChevronRight size={14} className="inline ml-1" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            {recentBlogs.map((blog) => (
+              <Link key={blog.id} to={`/devlogs/${blog.slug}`} className="group block">
+                <motion.div 
+                  whileHover={{ y: -12 }}
+                  className="space-y-8"
+                >
+                  <div className="aspect-[16/9] rounded-[3rem] overflow-hidden border border-stone-200/50 relative bg-stone-50 shadow-sm group-hover:shadow-2xl transition-all duration-700">
+                     {blog.thumbnail ? (
+                       <img 
+                        src={`${BASE_URL}/${blog.thumbnail}`} 
+                        alt={blog.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 grayscale-[20%] group-hover:grayscale-0" 
+                       />
+                     ) : (
+                       <div className="w-full h-full flex items-center justify-center text-stone-300 bg-stone-100">
+                         <FileText size={48} />
+                       </div>
+                     )}
+                  </div>
+                  <div className="space-y-4 px-4">
+                    <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-primary">
+                      <span className="italic">{blog.category}</span>
+                      <div className="h-1 w-1 rounded-full bg-primary/30" />
+                      <div className="flex items-center gap-2 text-stone-400">
+                        <Calendar size={12} />
+                        {new Date(blog.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight tracking-tight">
+                      {blog.title}
+                    </h3>
+                    <p className="text-stone-500 font-medium text-lg leading-relaxed line-clamp-2">
+                      {blog.content.replace(/<[^>]*>?/gm, '').substring(0, 150)}...
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Feedback Section */}
       {/* <section className="max-w-4xl mx-auto px-8 text-center space-y-16 pb-40">

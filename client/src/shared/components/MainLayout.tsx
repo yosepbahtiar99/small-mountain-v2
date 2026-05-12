@@ -111,7 +111,7 @@ export default function MainLayout() {
 
         <div className="max-w-7xl mx-auto px-8 relative z-20">
           <div className="flex justify-center mb-6">
-            <Mountain size={40} className="text-[#FAF7F2]/10" />
+            <Mountain size={40} className="text-[#FAF7F2]" />
           </div>
           <h2 className="text-3xl font-black text-[#FAF7F2] mb-2 tracking-tight">Small Mountain<sup className="text-[0.5em] ml-0.5 relative -top-[1em] opacity-80 font-bold">™</sup></h2>
           <p className="text-[#FAF7F2] text-sm max-w-sm mx-auto mb-10 font-extrabold leading-relaxed">
