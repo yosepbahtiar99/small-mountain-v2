@@ -168,7 +168,7 @@ export default function LandingPage() {
       </section>
 
       {/* Feedback Section */}
-      <section className="max-w-4xl mx-auto px-8 text-center space-y-16 pb-40">
+      {/* <section className="max-w-4xl mx-auto px-8 text-center space-y-16 pb-40">
         <div className="space-y-4">
           <h2 className="text-4xl md:text-6xl font-black text-warm-text">{t('feedback')}</h2>
           <p className="text-stone-500 text-xl font-medium">Have something to say? We're listening.</p>
@@ -224,7 +224,7 @@ export default function LandingPage() {
             )}
           </div>
         </form>
-      </section>
+      </section> */}
       </div>
     </div>
   );
