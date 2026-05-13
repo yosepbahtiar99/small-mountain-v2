@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -7,17 +6,6 @@ import { Globe, Gamepad2, FileText, ShoppingBag, Home, Mountain } from 'lucide-r
 export default function MainLayout() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
-
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const isLanding = location.pathname === '/';
-  const isTransparentNav = isLanding && !scrolled;
 
   const toggleLanguage = () => {
     const newLng = i18n.language === 'en' ? 'id' : 'en';
@@ -48,28 +36,23 @@ export default function MainLayout() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`px-2 py-2 rounded-full border flex items-center gap-1 md:gap-4 backdrop-blur-xl transition-all duration-300 ${isTransparentNav
-            ? 'bg-white/10 border-white/10 shadow-none'
-            : 'glass-warm border-stone-200/50 shadow-xl'
-            }`}
+          className="glass-warm px-2 py-2 rounded-full border border-stone-200/50 flex items-center gap-1 md:gap-4 shadow-xl backdrop-blur-xl"
         >
-          <Link to="/" className={`font-black text-xl tracking-tighter ml-4 mr-2 hidden md:block transition-colors ${isTransparentNav ? 'text-white' : 'text-primary'}`}><Mountain size={16} /></Link>
+          <Link to="/" className="text-primary font-black text-xl tracking-tighter ml-4 mr-2 hidden md:block"><Mountain size={16} /></Link>
 
           <div className="flex items-center gap-1 md:gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${location.pathname === link.path
-                  ? (isTransparentNav ? 'text-white' : 'text-primary')
-                  : (isTransparentNav ? 'text-white/60 hover:text-white' : 'text-stone-500 hover:text-warm-text')
-                  }`}
+                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
+                  location.pathname === link.path ? 'text-primary' : 'text-stone-500 hover:text-warm-text'
+                }`}
               >
                 {location.pathname === link.path && (
                   <motion.div
                     layoutId="nav-pill"
-                    className={`absolute inset-0 rounded-full border ${isTransparentNav ? 'bg-white/20 border-white/20' : 'bg-primary/5 border-primary/10'
-                      }`}
+                    className="absolute inset-0 bg-primary/5 rounded-full border border-primary/10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -79,12 +62,11 @@ export default function MainLayout() {
             ))}
           </div>
 
-          <div className={`h-4 w-px mx-2 hidden md:block transition-colors ${isTransparentNav ? 'bg-white/20' : 'bg-stone-200'}`} />
+          <div className="h-4 w-px bg-stone-200 mx-2 hidden md:block" />
 
           <button
             onClick={toggleLanguage}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all mr-1 ${isTransparentNav ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-stone-500 hover:text-warm-text hover:bg-stone-100'
-              }`}
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-stone-100 transition-all text-stone-500 hover:text-warm-text mr-1"
             title="Toggle Language"
           >
             <Globe size={18} />

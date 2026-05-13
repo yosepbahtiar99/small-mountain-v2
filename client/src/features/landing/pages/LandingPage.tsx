@@ -78,72 +78,60 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative -mt-36">
-      {/* Hero Section - Full Bleed Dark Indigo */}
-      <div className="bg-primary relative overflow-hidden pt-36 pb-36 text-white w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] isolate">
-        {/* Atmospheric mist specific to hero */}
-        <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-blue-600/20 blur-[120px] rounded-full -translate-y-1/3 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-indigo-500/10 blur-[100px] rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none" />
-        
-        {/* Bottom Linear Gradient Fade to Warm Background */}
-        <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent to-warm-bg pointer-events-none z-10" />
+    <div className="space-y-40">
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-10 z-50"
+          >
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
+              <Mountain size={14} />
+              Mountain Storytelling
+            </div>
+            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tight leading-[0.85] text-warm-text">
+              SMALL <br />
+              <span className="text-primary">Mountain<sup className="text-[0.4em] ml-0.5 relative -top-[1.2em] opacity-80 font-bold">™</sup></span> <br />
+            </h1>
+            <p className="text-stone-500 text-xl max-w-sm leading-relaxed font-medium">
+              {t('studio_tagline')}
+            </p>
+            <div className="flex gap-6 pt-4">
+              <Link to="/games" className="bg-warm-text text-white px-10 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-primary transition-all shadow-2xl shadow-primary/20">
+                EXPLORE PROJECTS
+              </Link>
+            </div>
+          </motion.div>
 
-        <section className="max-w-7xl mx-auto px-8 relative z-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-10 z-50"
-            >
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md">
-                <Mountain size={14} />
-                Mountain Storytelling
-              </div>
-              <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tight leading-[0.85] text-white">
-                SMALL <br />
-                <span className="text-white">Mountain<sup className="text-[0.4em] ml-0.5 relative -top-[1.2em] opacity-80 font-bold">™</sup></span> <br />
-              </h1>
-              <p className="text-blue-100/70 text-xl max-w-sm leading-relaxed font-medium">
-                {t('studio_tagline')}
-              </p>
-              <div className="flex gap-6 pt-4">
-                <Link to="/games" className="bg-white text-primary px-10 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-stone-100 transition-all shadow-2xl shadow-black/10 border border-white/50">
-                  EXPLORE PROJECTS
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="relative"
-            >
-              <div className="aspect-[4/5] rounded-[4rem] bg-[#FAF7F2] border border-white/10 overflow-hidden shadow-2xl relative group isolation-isolate">
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[4rem] z-0">
-                  <div className="w-96 h-96 rounded-full bg-primary/10 blur-3xl absolute -top-12 -left-12 animate-pulse" />
-                  <img
-                    src="/logo.png"
-                    id="hero-logo-img"
-                    className="w-full h-full object-cover relative z-10 opacity-100 mix-blend-multiply"
-                    alt="Small Mountain Emblem"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      const fallback = document.getElementById('hero-fallback-mountain');
-                      if (fallback) fallback.style.display = 'block';
-                    }}
-                  />
-                  <div id="hero-fallback-mountain" className="hidden w-full h-full relative z-10">
-                    <Mountain size={420} className="text-primary/10 absolute -bottom-16 -left-20" />
-                  </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative"
+          >
+            <div className="aspect-[4/5] rounded-[4rem] bg-stone-100/40 border border-stone-200 overflow-hidden shadow-inner relative group isolation-isolate">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-[4rem] z-0">
+                <div className="w-96 h-96 rounded-full bg-primary/10 blur-3xl absolute -top-12 -left-12 animate-pulse" />
+                <img
+                  src="/logo.png"
+                  id="hero-logo-img"
+                  className="w-full h-full object-cover relative z-10 mix-blend-multiply opacity-100"
+                  alt="Small Mountain Emblem"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = document.getElementById('hero-fallback-mountain');
+                    if (fallback) fallback.style.display = 'block';
+                  }}
+                />
+                <div id="hero-fallback-mountain" className="hidden w-full h-full relative z-10">
+                  <Mountain size={420} className="text-primary/15 absolute -bottom-16 -left-20" />
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </section>
-      </div>
-
-      {/* Content Wrapper for remaining sections */}
-      <div className="space-y-40 mt-24 relative z-20">
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Featured Game Section */}
       <section className="max-w-7xl mx-auto px-8">
@@ -388,7 +376,6 @@ export default function LandingPage() {
           </div>
         </form>
       </section> */}
-      </div>
     </div>
   );
 }
