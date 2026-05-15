@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Send, Sparkles, Mountain, FileText, Calendar, MessageCircle } from 'lucide-react';
+import { ChevronRight, Sparkles, Mountain, FileText, Calendar } from 'lucide-react';
 import api from '../../../shared/lib/axios';
 
 const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -12,9 +12,9 @@ export default function LandingPage() {
   const [featuredGames, setFeaturedGames] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recentBlogs, setRecentBlogs] = useState<any[]>([]);
-  const [feedback, setFeedback] = useState({ name: '', email: '', message: '' });
+  // const [feedback, setFeedback] = useState({ name: '', email: '', message: '' });
   const [stats, setStats] = useState({ totalGames: 0, totalBlogs: 0 });
-  const [isSent, setIsSent] = useState(false);
+  // const [isSent, setIsSent] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +65,7 @@ export default function LandingPage() {
 
   const activeGame = featuredGames[currentIndex];
 
+  /*
   const handleFeedback = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -76,6 +77,7 @@ export default function LandingPage() {
       console.error(err);
     }
   };
+  */
 
   return (
     <div className="space-y-40">

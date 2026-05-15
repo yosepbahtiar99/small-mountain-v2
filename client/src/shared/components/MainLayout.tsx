@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -6,6 +7,11 @@ import { Globe, Gamepad2, FileText, ShoppingBag, Home, Mountain } from 'lucide-r
 export default function MainLayout() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   const toggleLanguage = () => {
     const newLng = i18n.language === 'en' ? 'id' : 'en';
