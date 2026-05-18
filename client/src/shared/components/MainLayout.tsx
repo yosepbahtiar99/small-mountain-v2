@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Globe, Gamepad2, FileText, ShoppingBag, Home, Mountain } from 'lucide-react';
+import {
+  Globe, Gamepad2, FileText,
+  // ShoppingBag,
+  Home, Mountain
+} from 'lucide-react';
 
 export default function MainLayout() {
   const { t, i18n } = useTranslation();
@@ -23,7 +27,7 @@ export default function MainLayout() {
     { path: '/', name: 'Home', icon: Home },
     { path: '/games', name: t('released_games'), icon: Gamepad2 },
     { path: '/devlogs', name: t('devlogs'), icon: FileText },
-    { path: '/merch', name: t('merch_store'), icon: ShoppingBag },
+    // { path: '/merch', name: t('merch_store'), icon: ShoppingBag },
   ];
 
   return (
@@ -51,9 +55,8 @@ export default function MainLayout() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
-                  location.pathname === link.path ? 'text-primary' : 'text-stone-500 hover:text-warm-text'
-                }`}
+                className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${location.pathname === link.path ? 'text-primary' : 'text-stone-500 hover:text-warm-text'
+                  }`}
               >
                 {location.pathname === link.path && (
                   <motion.div
