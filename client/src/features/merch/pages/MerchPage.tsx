@@ -5,7 +5,7 @@ import { ShoppingBag, ExternalLink, Coffee } from 'lucide-react';
 import api from '../../../shared/lib/axios';
 import Pagination from '../../../shared/components/Pagination';
 
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '');
 
 export default function MerchPage() {
   const { t } = useTranslation();

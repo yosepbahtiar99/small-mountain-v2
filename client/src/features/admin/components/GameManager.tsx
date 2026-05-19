@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, Save, Upload } from 'lucide-react';
 import { useAppStore } from '../../../shared/store/useAppStore';
 import DataTable, { type IColumn } from '../../../shared/components/DataTable';
 
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '');
 
 export default function GameManager() {
   const [games, setGames] = useState<any[]>([]);

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../shared/lib/axios';
 import Pagination from '../../../shared/components/Pagination';
 
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '');
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
