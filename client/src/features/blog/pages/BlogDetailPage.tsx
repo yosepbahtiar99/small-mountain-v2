@@ -70,7 +70,13 @@ export default function BlogDetailPage() {
         transition={{ delay: 0.2 }}
         className="prose prose-stone max-w-none prose-xl prose-headings:font-serif prose-headings:font-black prose-headings:italic prose-headings:tracking-tight prose-p:text-stone-600 prose-p:leading-[1.8] prose-p:font-medium"
       >
-        <ReactMarkdown>{blog.content}</ReactMarkdown>
+        <ReactMarkdown>
+          {blog.content
+            ? blog.content
+                .replace(/<br\s*\/?>\s*\r?\n/gi, '\n') // Replace <br> right before newline with simple newline
+                .replace(/<br\s*\/?>/gi, '  \n')     // Replace any other <br> with Markdown double space line break
+            : ''}
+        </ReactMarkdown>
       </motion.div>
       
       <footer className="pt-20 border-t border-stone-200 text-center space-y-6">

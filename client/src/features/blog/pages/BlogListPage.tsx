@@ -72,7 +72,12 @@ export default function BlogListPage() {
                        </div>
                     </div>
                     <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-warm-text group-hover:text-primary transition-colors leading-tight tracking-tight">{blog.title}</h2>
-                    <p className="text-stone-500 font-medium text-lg leading-relaxed line-clamp-3">{blog.content.substring(0, 200)}...</p>
+                    <p className="text-stone-500 font-medium text-lg leading-relaxed line-clamp-3">
+                       {blog.content
+                         ? blog.content.replace(/<br\s*\/?>/gi, ' ').substring(0, 200)
+                         : ''}
+                       ...
+                     </p>
                  </div>
                  
                  <button className="flex items-center gap-3 text-warm-text font-black text-[10px] uppercase tracking-[0.2em] group-hover:text-primary transition-all pt-2 cursor-pointer">
