@@ -36,6 +36,12 @@ const upload = {
         }
 
         try {
+          // Ensure directory exists dynamically at runtime (in case it got deleted)
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+            console.log(`[SmartUpload] Dynamically recreated missing upload directory: ${uploadDir}`);
+          }
+
           // Calculate SHA-256 hash of the file buffer
           const hash = crypto.createHash('sha256').update(req.file.buffer).digest('hex');
           const ext = path.extname(req.file.originalname).toLowerCase();
